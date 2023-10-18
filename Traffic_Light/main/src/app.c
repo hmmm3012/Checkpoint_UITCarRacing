@@ -344,14 +344,32 @@ void send_setup_msg(char *topic, char *data)
         char *rendered = cJSON_Print(root);
         send_mesh(rendered);
     }
-    if (strcmp(topic,"light-start") == 0) {
+
+    if (strcmp(topic, "light-start") == 0)
+    {
         root = cJSON_Parse(data);
         char *start = cJSON_GetObjectItem(root, "start")->valuestring;
         printf("Light start\n");
         TrafficLight_start();
         char *rendered = cJSON_Print(root);
-        ESP_LOGI(TAG,"%s",rendered);
+        ESP_LOGI(TAG, "%s", rendered);
         send_mesh(rendered);
+    }
+
+    else if (strcmp(topic, "light-restart") == 0)
+    {
+        TrafficLight_setLight("red");
+    }
+
+    else if (strcmp(topic, "light-time") == 0)
+    {  
+        #ifndef START_NODE
+            root = cJSON_Parse(data);
+            uint8_t green = cJSON_GetObjectItem(root, "green")->valueint;
+            uint8_t yellow = cJSON_GetObjectItem(root, "yellow")->valueint;
+            uint8_t red = cJSON_GetObjectItem(root, "red")->valueintt;
+            TrafficLight_setTime(green, yellow, red);
+        #endif
     }
     // else if(strcmp(topic,"range")==0){
     //     root = cJSON_Parse(data);
@@ -448,7 +466,7 @@ bool send_connect_msg()
 {
     if (esp_mesh_is_root())
     {
-        mqtt_app_publish("ESP-connect", NODE_ID);
+        mqtt_app_publish("LIGHT-connect", NODE_ID);
         return true;
     }
     else
@@ -461,7 +479,8 @@ bool send_connect_msg()
         cJSON *root;
         root = cJSON_CreateObject();
         cJSON_AddStringToObject(root, "Topic", "Connect-Mesh");
-        cJSON_AddStringToObject(root, "ID", NODE_ID);
+        //cJSON_AddStringToObject(root,"Node","Traffic-Light");
+        //cJSON_AddStringToObject(root, "ID", NODE_ID);
         cJSON_AddStringToObject(root, "MAC", mac_str);
         char *rendered = cJSON_Print(root);
         snprintf((char *)tx_buf, TX_SIZE, rendered);
@@ -546,7 +565,7 @@ void task_mesh_rx(void *pvParameter)
             else if (strcmp(topic, "Connect-Mesh") == 0)
             {
                 char *id = cJSON_GetObjectItem(root, "ID")->valuestring;
-                mqtt_app_publish("ESP-connect", id);
+                mqtt_app_publish("LIGHT-connect", id);
 #if SEND_DISCONNECT
                 char *mac = cJSON_GetObjectItem(root, "MAC")->valuestring;
                 for (int i = 0; i <= lengthOfActiveNode; i++)
@@ -630,8 +649,9 @@ void task_mesh_rx(void *pvParameter)
                 char *ip_setup = cJSON_GetObjectItem(root, "ip")->valuestring;
                 nvs_set_ip(ip_setup, &my_handle);
             }
+            else if (strcmp(topic, ""))
 #if DEBUG
-            ESP_LOGI(TAG, "NON-ROOT(MAC:%s)- Msg: %s, ", mac_address_str, (char *)data.data);
+                ESP_LOGI(TAG, "NON-ROOT(MAC:%s)- Msg: %s, ", mac_address_str, (char *)data.data);
             snprintf(mac_address_str, sizeof(mac_address_str), "" MACSTR "", MAC2STR(from.addr));
             ESP_LOGI(TAG, "send by ROOT: %s\r\n", mac_address_str);
 #endif
@@ -714,9 +734,9 @@ void task_send_bat_capacity(void *pvParameter)
             adc2_get_raw(ADC2_CHANNEL_0, ADC_WIDTH_BIT_DEFAULT, &adc_value);
             adc += adc_value;
         }
-        #if DEBUG
-            ESP_LOGI(TAG, "ADC delay");
-        #endif
+#if DEBUG
+        ESP_LOGI(TAG, "ADC delay");
+#endif
         adc = adc / 64;
         voltage = esp_adc_cal_raw_to_voltage(adc, &adc1_chars);
         printf("Raw: %d, voltage: %ld mV\n", adc * 2, voltage * 2);

@@ -15,6 +15,9 @@
 #define END_NODE 0
 
 #define STOP_STATION_NODE 0
+
+#define START_NODE 1
+
 /**
  * GPIOs defs
  */

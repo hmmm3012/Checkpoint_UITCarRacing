@@ -43,6 +43,8 @@ var delay = null;
 var timeDelay = 0;
 var startDelay = 0;
 
+
+
 $.when(
 $.getScript('./configClient/config.js',function(){
     Socket_hostIP = hostIP;
@@ -77,7 +79,13 @@ $.getScript('./configClient/config.js',function(){
     $("#nameofteam-1").html(currentTeam1);
     document.getElementById("timerCount").innerHTML =
       "00" + ":" + "00" + ":" + "00";
-  
+    
+
+    //start connect
+    socket.on('connect',() => {
+      console.log("reset") 
+      socket.emit('reset-light')
+    })
     $("#btnStartStop").on("click", "#start", function () {
       socket.emit("start");
     });

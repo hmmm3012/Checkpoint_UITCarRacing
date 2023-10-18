@@ -1,5 +1,6 @@
 var mqtt = require('mqtt');
-var config = require('../config/config')
+var config = require('../config/config');
+const { stringify } = require('postcss');
 var client = mqtt.connect('mqtt://' + config.host + ":" + config.mqttPort, {
     clientId: 'Server_Client',
     reconnectPeriod: 1000,
@@ -48,6 +49,9 @@ module.exports = function (io, activeNode) {
                 console.log(message.toString());
                 io.sockets.emit('esp-cap-layer', message.toString());
                 break;
+            case 'LIGHT-connect':
+                
+                
         }
     });
 
@@ -56,6 +60,9 @@ module.exports = function (io, activeNode) {
     }
     exports.sendStartTraffic = function(data) {
         client.publish('light-start',JSON.stringify(data),{qos:1, retain: false})
+    }
+    exports.restartLight = function(data) {
+        client.publish('light-restart',JSON.stringify(data),{qos:1,retain: false})
     }
     exports.setTrafficTime = function (data) {
         client.publish('light-time',JSON.stringify(data),{qos:1, retain: false})

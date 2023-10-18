@@ -12,20 +12,26 @@ const form = document.querySelector('form')
 const delForm = document.querySelector('#delForm')
 const errorMessage = document.querySelector('.error')
 const setTimeBtn = document.querySelector('#setLightTime')
+const startLight = document.querySelector('#startLight')
 var acc = document.getElementsByClassName("accordion");
 const greenLed = document.querySelector("#green-led")
 const yellowLed = document.querySelector("#yellow-led")
 const redLed = document.querySelector("#red-led")
 
 setTimeBtn.addEventListener('click',() => {
-	console.log(setTimeBtn)
+	// console.log(setTimeBtn)
 	const data = {
-		green: greenLed.value,
-		yellow: yellowLed.value,
-		red: redLed.value
+		green: Number(greenLed.value),
+		yellow: Number(yellowLed.value),
+		red: Number(redLed.value)
 	}
 	console.log("set time")
 	socket.emit("set-light-time",data)
+})
+
+startLight.addEventListener('click', () => {
+	console.log('start Light')
+	socket.emit('start-light',{})
 })
 var i;
 	for (let i = 1; i <= 10; i++) {

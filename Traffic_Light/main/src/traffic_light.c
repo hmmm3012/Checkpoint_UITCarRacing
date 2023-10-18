@@ -7,7 +7,7 @@
 #include "freertos/task.h"
 
 LightTime LT = {
-    .red = 10,
+    .red = 4,
     .green = 8,
     .yellow = 1
 };
@@ -28,6 +28,7 @@ void TrafficLight_setTime(uint8_t green, uint8_t yellow, uint8_t red){
     LT.red = red;
     LT.yellow = yellow;
 }
+
 void TrafficLight_start(void){
     gpio_set_level(RED_LED, LED_ON_LEVEL);
     gpio_set_level(GREEB_LED, LED_OFF_LEVEL);

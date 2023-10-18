@@ -4,6 +4,7 @@ module.exports = function (io, mqtt, activeNode, startTime) {
     io.on("connection", function (socket) {
         console.log("Socket connected")
         socket.emit("ESP-check-data", [...activeNode]);
+        
         socket.on("disconnect",()=>{
             console.log("Socket disconnected")
         })
@@ -73,9 +74,17 @@ module.exports = function (io, mqtt, activeNode, startTime) {
             
             // console.log(Math.round((hrTime[0]-startTime[0]) * 100 + (hrTime[1]-startTime[1]) / 10000000))}
         })
-        socket.on('start', ()=>{
+        socket.on('start', () =>{
             io.sockets.emit('start-res')
             mqtt.sendStartTraffic({start: "all"})
+        })
+        socket.on('start-light', () => {
+            console.log("start light")
+            mqtt.sendStartTraffic({start: 'all'})
+        })
+        socket.on('reset-light', () => {
+            console.log("reset light")
+            mqtt.restartLight({restart: 'all'})
         })
         socket.on('stop', ()=>{
             io.sockets.emit('stop-res')
