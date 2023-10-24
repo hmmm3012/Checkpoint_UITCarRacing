@@ -2,11 +2,11 @@ const db = require('../controllers/controller')
 module.exports = function (io, mqtt, activeNode, startTime) {
     var nowNode = 0;
     io.on("connection", function (socket) {
-        console.log("Socket connected")
+        // console.log("Socket connected")
         socket.emit("ESP-check-data", [...activeNode]);
         
         socket.on("disconnect",()=>{
-            console.log("Socket disconnected")
+            // console.log("Socket disconnected")
         })
         // socket.on('ESP-connect', (data) => {
         //     socket.userID = data;
@@ -135,6 +135,10 @@ module.exports = function (io, mqtt, activeNode, startTime) {
         socket.on("set-light-time",(data) => {
             console.log(data)
             mqtt.setTrafficTime(data)
+        })
+        socket.on("stop-light",(data)=>{
+            console.log(data)
+            mqtt.stopLight()
         })
         socket.on("Get-line",()=>{
             db.getLine((lineList)=>{

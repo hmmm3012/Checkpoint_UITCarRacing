@@ -50,11 +50,18 @@ module.exports = function (io, activeNode) {
                 io.sockets.emit('esp-cap-layer', message.toString());
                 break;
             case 'LIGHT-connect':
-                
-                
+                console.log(message.toString());
+                io.sockets.emit('ESPLight-connect', message.toString());
+                break;            
+            case 'LIGHT-disconnect':
+                console.log(message.toString());
+                io.sockets.emit('ESPLight-disconnect', message.toString());
+                break;    
         }
     });
-
+    exports.stopLight = function (data) {
+        client.publish('light-stop',JSON.stringify(data),{qos:1, retain: false})
+    }
     exports.setLight = function (data) {
         client.publish('light',JSON.stringify(data),{qos:1, retain: false})
     }

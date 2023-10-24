@@ -13,6 +13,7 @@ const delForm = document.querySelector('#delForm')
 const errorMessage = document.querySelector('.error')
 const setTimeBtn = document.querySelector('#setLightTime')
 const startLight = document.querySelector('#startLight')
+const stopLight = document.querySelector('#stopLight')
 var acc = document.getElementsByClassName("accordion");
 const greenLed = document.querySelector("#green-led")
 const yellowLed = document.querySelector("#yellow-led")
@@ -33,11 +34,21 @@ startLight.addEventListener('click', () => {
 	console.log('start Light')
 	socket.emit('start-light',{})
 })
+$('#stopLight').click(() => {
+	console.log('stop light btn clicked')
+	socket.emit('stop-light',{});
+});
 var i;
+// Background of esp connected
 	for (let i = 1; i <= 10; i++) {
 		$('#esp' + i).text('disconnected');
 		$('#esp' + i).css({ 'color': 'black' });
 		$('#esp' + i).css({ 'background': 'red' });
+	}
+	for(let i = 1; i<=2;i++){
+		$('#esp-light' + i).text('disconnected');
+		$('#esp-light' + i).css({ 'color': 'black' });
+		$('#esp-light' + i).css({ 'background': 'red' });
 	}
 	socket.on("send-tick-setup", (tick) => {
 		socket.emit("esp-send", {Data: tick.Data, Tick: tick.Tick});
@@ -61,6 +72,16 @@ var i;
 		console.log(data);
 		$('#esp'+ data).text('disconnected');
 		$('#esp'+ data).css({ 'background': 'red' });
+	})
+	socket.on('ESPLight-connect', (data) => {
+		console.log(data);
+		$('#esp-light'+ data).text('connected');
+		$('#esp-light'+ data).css({ 'background': 'green' });
+	})
+	socket.on('ESPLight-disconnect', (data) => {
+		console.log(data);
+		$('#esp-light'+ data).text('disconnected');
+		$('#esp-light'+ data).css({ 'background': 'red' });
 	})
 	socket.on('ListTeam', (data) => {
 		console.log(data);
